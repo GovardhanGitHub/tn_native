@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "AwesomeProject",
+    "name": "TNWRD",
     "slug": "AwesomeProject",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,20 +14,25 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.govardhan05.AwesomeProject"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.govardhan05.AwesomeProject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "98cac7bf-d5bb-4300-a199-5c5333e98542"
+      }
     }
   }
 }
