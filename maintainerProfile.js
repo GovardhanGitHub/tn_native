@@ -263,6 +263,7 @@ export default class MaintainerProfile extends Component {
     try {
       await AsyncStorage.removeItem(key);
       this.props.navigation.navigate("Login");
+      APIKit.interceptors.request.clear();
       return true;
     } catch (exception) {
       return false;

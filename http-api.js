@@ -1,24 +1,51 @@
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+// import envs from '../config/env';
+// import {LOGOUT} from '../constants/routeNames';
+import { navigate } from "./RootNavigator.js";
 
-// Create axios client, pre-configured with baseURL
-let APIKit = axios.create({
-  // baseURL: "http://3.99.155.126:8080",
-  // baseURL: "http://210.18.189.94:8080",
+let headers = {};
 
+const APIKit = axios.create({
   baseURL: "https://api.wrdpwd.com",
-  timeout: 10000,
+  headers,
 });
 
-// Set JSON Web Token in Client to be included in all calls
-export const setClientToken = (token) => {
-  APIKit.interceptors.request.use( (config) => {
-    config.headers.Authorization = `Bearer ${token}`;
-    console.log(
-      "🚀 ~ file: http-api.js ~ line 15 ~ config",
-      config.headers.Authorization
-    );
+APIKit.interceptors.request.use(
+  async (config) => {
+    const token = await AsyncStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
-  });
-};
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
+APIKit.interceptors.response.use(
+  (response) =>
+    new Promise((resolve, reject) => {
+      resolve(response);
+    }),
+  (error) => {
+    if (!error.response) {
+      return new Promise((resolve, reject) => {
+        reject(error);
+      });
+    }
+    if (error.response.status === 403 || error.response.status === 401) {
+      AsyncStorage.removeItem("@storage_Key");
+      AsyncStorage.removeItem("token");
+      APIKit.interceptors.request.clear();
+      navigate("Login");
+    } else {
+      return new Promise((resolve, reject) => {
+        reject(error);
+      });
+    }
+  }
+);
+
+export default APIKit;

@@ -102,7 +102,7 @@ export default function LoginScreen({ navigation }) {
         const auth = JSON.parse(v);
         // console.log("🚀 ~ file: login.js ~ line 118 ~ auth.authentication.authorities.forEach ~ auth", auth)
 
-        setClientToken(auth.token);
+        // setClientToken(auth.token);
         auth.authentication.authorities.forEach((auth) => {
           if (auth.authority == "ROLE_ADMIN") {
             navigation.navigate("Main");
@@ -123,44 +123,54 @@ export default function LoginScreen({ navigation }) {
 
   async function onLoginPress() {
     const payload = { username: username, password: password };
+    await AsyncStorage.clear();
 
-    // console.log("🚀 ~ file: login.js ~ line 127 ~ onLoginPress ~ payload", payload)
+    console.log(
+      "🚀 ~ file: login.js ~ line 127 ~ onLoginPress ~ payload",
+      payload
+    );
 
     const onSuccess = ({ data }) => {
-      setClientToken(data.token);
+      // setClientToken(data.token);
       try {
+        setusername("");
+        setpassword("");
+
         const jsonValue = JSON.stringify(data);
         AsyncStorage.setItem("@storage_Key", jsonValue);
-        setTimeout(() => {
-          data.authentication.authorities.forEach((auth) => {
-            console.log(
-              "🚀 ~ file: login.js ~ line 139 ~ data.authentication.authorities.forEach ~ auth.authority",
-              auth.authority
-            );
-            if (auth.authority == "ROLE_ADMIN") {
-              navigation.navigate("Main");
-              return;
-            } else if (auth.authority == "ROLE_USER") {
-              navigation.navigate("MaintainerHome");
-              return;
-            } else {
-              alert("no role is assigned..");
-              return;
-            }
-          });
-        }, 200);
+        AsyncStorage.setItem("token", data.token);
+        console.log(
+          "🚀 ~ file: login.js ~ line 138 ~ onSuccess ~ data.token",
+          data.token
+        );
+        data.authentication.authorities.forEach((auth) => {
+          console.log(
+            "🚀 ~ file: login.js ~ line 139 ~ data.authentication.authorities.forEach ~ auth.authority",
+            auth.authority
+          );
+          if (auth.authority == "ROLE_ADMIN") {
+            navigation.navigate("Main");
+            return;
+          } else if (auth.authority == "ROLE_USER") {
+            navigation.navigate("MaintainerHome");
+            return;
+          } else {
+            alert("no role is assigned..");
+            return;
+          }
+        });
       } catch (e) {
-        // console.log("🚀 ~ file: login.js ~ line 152 ~ onSuccess ~ e", e)
+        console.log("🚀 ~ file: login.js ~ line 152 ~ onSuccess ~ e", e);
         alert(e);
       }
     };
 
     const onFailure = (error) => {
-      // console.log("🚀 ~ file: login.js ~ line 127 ~ onFailure ~ error", error);
+      console.log("🚀 ~ file: login.js ~ line 127 ~ onFailure ~ error", error);
       alert("Login Failed! Invalid Username or Password.");
     };
 
-    await APIKit.post("/users/authenticate", payload, setClientToken)
+    APIKit.post("/users/authenticate", payload)
       .then(onSuccess)
       .catch(onFailure);
   }
@@ -185,6 +195,7 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.logoText}>TNWR-BOARD</Text>
             <TextInput
               placeholder="Username"
+              value={username}
               placeholderColor="#c4c3cb"
               onChangeText={(e) => setusername(e)}
               autoCapitalize="none"
@@ -192,6 +203,7 @@ export default function LoginScreen({ navigation }) {
             />
             <TextInput
               placeholder="Password"
+              value={password}
               placeholderColor="#c4c3cb"
               autoCapitalize="none"
               style={styles.loginFormTextInput}

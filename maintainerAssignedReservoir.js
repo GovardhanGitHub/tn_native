@@ -363,7 +363,6 @@ export default class MaintainerAssignedReservoir extends Component {
         // justifyContent: "center",
         backgroundColor: "#fff",
         borderRadius: 55,
-  
       },
       floatingButtonStyle: {
         // opacity: 0.8,
